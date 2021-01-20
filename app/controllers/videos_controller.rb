@@ -27,7 +27,7 @@ class VideosController < ApplicationController
     video.inventory ||= 0
 
     if video.save
-      render status: :ok, json: video.as_json
+      render status: :ok, json: video.as_json(only: [:id, :title, :overview, :release_date, :image_url, :external_id])
     else
       render status: :bad_request, json: { errors: video.errors.messages }
     end
