@@ -77,4 +77,68 @@ class VideosControllerTest < ActionDispatch::IntegrationTest
       expect(data["errors"]).must_include "title"
     end
   end
+
+  describe "create" do
+    let(:video_data) {
+      {
+        video: {
+          title: "Good Movie",
+          overview: "Some good movie plot",
+          release_date: "1986-09-19",
+          inventory: 5,
+          image_url: "https://image.tmdb.org/t/p/w185/vfrQk5IPloGg1v9Rzbh2Eg3VGyM.jpg",
+          external_id: 89734
+        }
+      }
+    }
+
+    it "creates a video" do
+      expect{
+        post videos_path, params: video_data
+      }.must_differ 'Video.count', 1
+
+      must_respond_with :success
+    end
+
+    it "requires a title" do
+      video_data[:video][:title] = nil
+
+      expect{
+        post videos_path, params: video_data
+      }.wont_change 'Video.count'
+
+      must_respond_with :bad_request
+      data = JSON.parse @response.body
+      expect(data).must_include "errors"
+      expect(data["errors"]).must_include "title"
+    end
+
+    it "requires an external id" do
+      video_data[:video][:external_id] = nil
+
+      expect{
+        post videos_path, params: video_data
+      }.wont_change 'Video.count'
+
+      must_respond_with :bad_request
+      data = JSON.parse @response.body
+      expect(data).must_include "errors"
+      expect(data["errors"]).must_include "external_id"
+    end
+
+    it "will not add a video twice" do
+      expect{
+        post videos_path, params: video_data
+      }.must_differ 'Video.count', 1
+
+      expect{
+        post videos_path, params: video_data
+      }.wont_change 'Video.count'
+
+      must_respond_with :bad_request
+      data = JSON.parse @response.body
+      expect(data).must_include "errors"
+      expect(data["errors"]).must_include "external_id"
+    end
+  end
 end

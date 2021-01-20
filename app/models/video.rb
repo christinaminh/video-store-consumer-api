@@ -2,6 +2,9 @@ class Video < ApplicationRecord
   has_many :rentals
   has_many :customers, through: :rentals
 
+  validates_presence_of :title, :external_id
+  validates_uniqueness_of :external_id, message: "Video is already in the video library."
+
   def available_inventory
     self.inventory - self.rentals.where(returned: false).length
   end
