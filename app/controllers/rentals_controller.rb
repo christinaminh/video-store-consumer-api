@@ -4,7 +4,8 @@ class RentalsController < ApplicationController
 
   # TODO: make sure that wave 2 works all the way
   def check_out
-    rental = Rental.new(video: @video, customer: @customer, due_date: params[:due_date])
+    due_date = Date.today + 7
+    rental = Rental.new(video: @video, customer: @customer, due_date: due_date)
 
     if rental.save
       render status: :ok, json: {}
