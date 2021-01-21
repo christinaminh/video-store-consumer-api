@@ -7,7 +7,7 @@ class CustomersController < ApplicationController
     if @sort
       data = Customer.all.order(@sort)
     else
-      data = Customer.all
+      data = Customer.all.order(:name)
     end
 
     data = data.paginate(page: params[:p], per_page: params[:n])
