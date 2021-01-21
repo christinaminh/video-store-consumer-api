@@ -5,7 +5,7 @@ class VideosController < ApplicationController
     if params[:query]
       data = VideoWrapper.search(params[:query])
     else
-      data = Video.all
+      data = Video.all.order(:title)
     end
 
     render status: :ok, json: data
