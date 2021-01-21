@@ -77,4 +77,99 @@ class VideosControllerTest < ActionDispatch::IntegrationTest
       expect(data["errors"]).must_include "title"
     end
   end
+
+  describe "create" do
+    let(:video_data) {
+      {
+        video: {
+          title: "It",
+          release_date: "2017-09-06",
+          overview: "In a small town in Maine, seven children known as The Losers Club come face to face with life problems, bullies and a monster that takes the shape of a clown called Pennywise.",
+          image_url: "https://image.tmdb.org/t/p/w185/9E2y5Q7WlCVNEhP5GiVTjhEhx1o.jpg",
+          external_id: 346364,
+          inventory: 5,
+        }
+      }
+    }
+
+    it "creates a video" do
+      expect{
+        post videos_path, params: video_data
+      }.must_differ 'Video.count', 1
+
+      must_respond_with :success
+    end
+
+    it "requires a title" do
+      video_data[:video][:title] = nil
+
+      expect{
+        post videos_path, params: video_data
+      }.wont_change 'Video.count'
+
+      must_respond_with :bad_request
+      data = JSON.parse @response.body
+      expect(data).must_include "errors"
+      expect(data["errors"]).must_include "title"
+    end
+
+    it "requires an external id" do
+      video_data[:video][:external_id] = nil
+
+      expect{
+        post videos_path, params: video_data
+      }.wont_change 'Video.count'
+
+      must_respond_with :bad_request
+      data = JSON.parse @response.body
+      expect(data).must_include "errors"
+      expect(data["errors"]).must_include "external_id"
+    end
+
+    it "inventory must be greater or equal to 0" do
+      video_data[:video][:inventory] = -1
+
+      expect{
+        post videos_path, params: video_data
+      }.wont_change 'Video.count'
+
+      must_respond_with :bad_request
+      data = JSON.parse @response.body
+      expect(data).must_include "errors"
+      expect(data["errors"]).must_include "inventory"
+    end
+
+    it "will not add a video twice" do
+      expect{
+        post videos_path, params: video_data
+      }.must_differ 'Video.count', 1
+
+      expect{
+        post videos_path, params: video_data
+      }.wont_change 'Video.count'
+
+      must_respond_with :bad_request
+      data = JSON.parse @response.body
+      expect(data).must_include "errors"
+      expect(data["errors"]).must_include "external_id"
+    end
+
+    it "will not add a video not from the database" do
+      wrong_data = {
+        video: {
+          title: "Jaws",
+          external_id: 1
+        }
+      }
+
+      expect{
+        post videos_path, params: wrong_data
+      }.wont_change 'Video.count'
+
+      must_respond_with :bad_request
+      data = JSON.parse @response.body
+      expect(data).must_include "errors"
+      expect(data["errors"]).must_include "external_id"
+    end
+  end
 end
