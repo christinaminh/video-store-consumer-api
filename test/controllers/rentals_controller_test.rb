@@ -105,7 +105,7 @@ class RentalsControllerTest < ActionDispatch::IntegrationTest
       # Expect
       expect(rental.customer_id).must_equal customer.id
       expect(rental.video_id).must_equal video.id
-      expect(rental.due_date).must_equal Date.today + 5
+      expect(rental.due_date).must_equal Date.today + 7
       expect(rental.returned).must_equal true
     end
 

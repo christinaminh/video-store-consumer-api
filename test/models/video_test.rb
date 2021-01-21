@@ -3,10 +3,10 @@ require 'test_helper'
 class VideoTest < ActiveSupport::TestCase
   let (:video_data) {
     {
-      "title": "Hidden Figures",
+      "title": "Hidden Figures2",
       "overview": "Some text",
       "release_date": "1960-06-16",
-      "inventory": 8
+      "inventory": 8,
     }
   }
 
