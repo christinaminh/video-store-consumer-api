@@ -57,18 +57,6 @@ class RentalsControllerTest < ActionDispatch::IntegrationTest
       expect(data).must_include "errors"
       expect(data["errors"]).must_include "customer_id"
     end
-
-    it "requires a due-date in the future" do
-      # Obvious case: actually in the past
-      post check_out_path(title: videos(:one).title), params: {
-        customer_id: customers(:two).id,
-        due_date: Date.today - 1
-      }
-      must_respond_with :bad_request
-      data = JSON.parse @response.body
-      expect(data).must_include "errors"
-      expect(data["errors"]).must_include "due_date"
-    end
   end
 
   describe "check-in" do
